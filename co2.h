@@ -1,12 +1,11 @@
 #pragma once
-#include "freeRtos.h"
-#include "task.h"
 #include "Room.h"
 
 typedef struct CO2* pCO2;
 
-int co2_create();
+uint16_t co2_create();
 void co2_destroy(pCO2 self);
-void meassure(pCO2 self);
-int getCO2(pCO2 self);
+void co2_meassure(pCO2 self);
+uint16_t getCO2(pCO2 self);
+void setCO2(pCO2 self, uint16_t ppm);
 void task_CO2(void* pvParameters);
