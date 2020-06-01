@@ -2,6 +2,7 @@
 #include <ATMEGA_FreeRTOS.h>
 #include <stdint.h>
 #include "task.h"
+#include "co2.h"
 
 typedef struct humidity* pHumidity;
 
