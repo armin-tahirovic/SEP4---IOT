@@ -3,6 +3,7 @@
 #include <task.h>
 #include "co2.h"
 #include "humidity.h"
+#include "CO2.h"
 
 typedef struct Room* pRoom;
 
