@@ -25,8 +25,9 @@ void temperature_meassure(pTemperature self) {
 
 
 uint16_t getTemperature(pTemperature self) {
-
+	xSemaphoreTake(xSemaphore, portMAX_DELAY);
 	return self->temp;
+	xSemaphoreGive(xSemaphore);
 }
 
 
@@ -34,10 +35,10 @@ void task_temperature(void* pvParameters) {
 	(void)pvParameters;
 	pTemperature data = pvParameters;
 	for (;;) {
+		xEventGroupSetBits(xEventGroup, BIT_1);
 		vTaskDelay(pdMS_TO_TICKS(200));
 		meassure(pvParameters);
 
 	}
 }
-
 
