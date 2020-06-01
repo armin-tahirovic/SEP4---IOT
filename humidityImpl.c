@@ -1,5 +1,5 @@
 #include "humidity.h"
-#include "CO2.h"
+
 typedef struct humidity {
 	int driverPort;
 	uint16_t humidity;
