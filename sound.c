@@ -25,8 +25,9 @@ void sound_meassure(pSound self) {
 
 
 uint16_t getSound(pSound self) {
-
+	xSemaphoreTake(xSemaphore, portMAX_DELAY);
 	return self->sound;
+	xSemaphoreGive(xSemaphore);
 }
 
 
@@ -34,10 +35,10 @@ void task_sound(void* pvParameters) {
 	(void)pvParameters;
 	pSound data = pvParameters;
 	for (;;) {
+		xEventGroupSetBits(xEventGroup, BIT_2);
 		vTaskDelay(pdMS_TO_TICKS(200));
 		meassure(pvParameters);
 
 	}
 }
-
 
