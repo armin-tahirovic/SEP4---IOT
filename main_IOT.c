@@ -105,8 +105,8 @@ uint16_t main_IOT() {
   hih8120Create();
 
 
-  /*xEventGroupSensor = xEventGroupCreate();
-  xSemaphoreMutex = xSemaphoreCreateMutex();*/
+  xEventGroupSensor = xEventGroupCreate();
+  xSemaphoreMutex = xSemaphoreCreateMutex();
 
  create_tasks();
 
