@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <task.h>
 
+#include "semaphores.h"
+
 typedef struct humidity* pHumidity;
 
 pHumidity humidity_create();
