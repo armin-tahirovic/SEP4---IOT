@@ -1,16 +1,15 @@
 #pragma once
-#include "freeRtos.h"
-#include <stdint.h>
-#include "task.h"
-#include "co2.h"
+#include <ATMEGA_FreeRTOS.h>
+#include "Room.h"
 
-typedef struct motion* pMotion;
+hcSr501_p hcSr501Inst;
 
-int motion_create();
+typedef struct MOTION* pMOTION;
 
-void motion_meassure(pMotion self);
+pMOTION motion_create();
+void motion_destroy(pMOTION self);
+void motion_meassure(pMOTION self);
+uint8_t getActivity(pMOTION self);
+void setActivity(pMOTION self, uint8_t newActivity);
 
-uint16_t getMotion(pMotion self);
-
-
-
+void task_MOTION(void* pvParameters);
