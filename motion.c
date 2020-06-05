@@ -1,44 +1,58 @@
+
 #include "motion.h"
 
-typedef struct motion {
-	int driverPort;
-	uint16_t motion
-}motion_t;
+typedef struct MOTION {
+	uint8_t activity;
+}MOTION_t;
 
+pMOTION motion_create() {
+	pMOTION driverPort = (pMOTION)pvPortMalloc(sizeof(MOTION_t));
 
-
-int motion_create() {
-	pMotion driverPort = (pMotion)pvPortMalloc(sizeof(motion_t));
-
-	if (NULL == driverPort) {
-		return NULL;
-	}
+	if (NULL == driverPort)
+	return NULL;
 
 	return driverPort;
 
 }
 
-void motion_meassure(pMotion self) {
-	self->motion = rand() % 50;
+void motion_destroy(pMOTION self) {
+	vPortFree(self);
 }
 
 
 
-uint16_t getMotion(pMotion self) {
-	xSemaphoreTake(xSemaphore, portMAX_DELAY);
-	return self->motion;
-	xSemaphoreGive(xSemaphore);
+void motion_meassure(pMOTION self) {
+
+		if ( hcSr501IsDetecting(hcSr501Inst) )
+		{
+			setActivity(self, 1);
+		}
+		else
+		{
+			setActivity(self, 0);
+		}
+		
+		printf("activity: %d \n", self->activity);
+	
 }
 
+uint8_t getActivity(pMOTION self) {
 
-void task_motion(void* pvParameters) {
-	(void)pvParameters;
-	pMotion data = pvParameters;
+	return self->activity;
+}
+
+void setActivity(pMOTION self, uint8_t newActivity) {
+
+	self->activity = newActivity;
+}
+
+void task_MOTION(void* pvParameters) {
+
+	hcSr501Inst = hcSr501Create(&PORTE, PE5);
+
 	for (;;) {
-		xEventGroupSetBits(xEventGroup, BIT_3);
-		vTaskDelay(pdMS_TO_TICKS(200));
-		meassure(pvParameters);
-
+		
+		vTaskDelay(pdMS_TO_TICKS(60000));
+		motion_meassure(pvParameters);
 	}
 }
-
