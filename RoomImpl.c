@@ -12,8 +12,6 @@ uint8_t minThreshold_hum;
 uint8_t maxThreshold_temp;
 uint8_t minThreshold_temp;
 
-
-
 void room_destroy() {
 	co2_destroy(room_co2_sensor);
 	humidity_destroy(room_humidity_sensor);
@@ -22,7 +20,7 @@ void room_destroy() {
 }
 
 void room_decode(lora_payload_t downlink_message){
-	uint16_t _newValue = 0;
+	
 	switch (downlink_message.port_no)
 	{
 		case 2:
@@ -40,31 +38,46 @@ void room_decode(lora_payload_t downlink_message){
 		
 		case 3:
 		printf("Change threshold humidity min \n");
+		minThreshold_hum = room_byteConverter(downlink_message);
 		break;
 		
 		case 4:
 		printf("Change threshold humidity max \n");
-		_newValue = downlink_message.bytes[0] << 8;
-		_newValue |= downlink_message.bytes[1];
-		printf("new value for humidity max: %d \n", _newValue);
+		maxThreshold_hum = room_byteConverter(downlink_message);
+		printf("new value for humidity max: %d \n", maxThreshold_hum);
 		break;
 		
 		case 5:
 		printf("Change threshold temperature min \n");
+		minThreshold_temp = room_byteConverter(downlink_message);
 		break;
 		
 		case 6:
 		printf("Change threshold temperature max \n");
+		maxThreshold_temp = room_byteConverter(downlink_message);
 		break;
 		
 		case 7:
 		printf("Change threshold co2 min \n");
+		minThreshold_co2 = room_byteConverter(downlink_message);
 		break;
 		
 		case 8:
 		printf("Change threshold co2 max \n");
+		maxThreshold_co2 = room_byteConverter(downlink_message);
 		break;
 	}
+}
+
+uint16_t room_byteConverter(lora_payload_t message){
+	uint16_t _newValue = 0;
+	
+	_newValue = message.bytes[0] << 8;
+	_newValue |= message.bytes[1];
+	
+	return _newValue;
+	
+	
 }
 
 void room_setThresholdHumidityMax(uint16_t newValue){
@@ -82,13 +95,19 @@ void task_RoomCollect(void* pvParameters) {
    
 
 		for (;;) {
-				vTaskDelay(pdMS_TO_TICKS(10000));
+				vTaskDelay(pdMS_TO_TICKS(5000));
 			
-
+				xSemaphoreTake(xSemaphore_co2, portMAX_DELAY);
 				room_co2_meassure = getCO2(room_co2_sensor);
-				room_humidity_meassure = getHumidity(room_humidity_sensor);
+					xSemaphoreGive(xSemaphore_co2);
+				
+				xSemaphoreTake(xSemaphore_hum, portMAX_DELAY);
+				room_humidity_meassure = getHumidity(room_humidity_sensor);	
 				room_temperature_meassure = getTemperature(room_humidity_sensor);
+					xSemaphoreGive(xSemaphore_hum);
+					
 				room_motion_meassure = getActivity(room_motion_sensor);
+				setActivity(room_motion_sensor, 0);
 			
 				
 			
@@ -107,5 +126,3 @@ void task_RoomCollect(void* pvParameters) {
 		
 			}
 		}
-		
-	
