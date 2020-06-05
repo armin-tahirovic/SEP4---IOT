@@ -1,4 +1,3 @@
-
 #include "motion.h"
 
 typedef struct MOTION {
@@ -23,14 +22,16 @@ void motion_destroy(pMOTION self) {
 
 void motion_meassure(pMOTION self) {
 
-		if ( hcSr501IsDetecting(hcSr501Inst) )
-		{
-			setActivity(self, 1);
-		}
-		else
-		{
-			setActivity(self, 0);
-		}
+			if ( hcSr501IsDetecting(motion_hcSr501Inst) )
+			{
+				printf("is detecting \n");
+				self->activity = 1;
+			}
+			else
+			{
+				printf("is NOT detecting \n");
+				self->activity = 0;
+			}
 		
 		printf("activity: %d \n", self->activity);
 	
@@ -46,13 +47,16 @@ void setActivity(pMOTION self, uint8_t newActivity) {
 	self->activity = newActivity;
 }
 
+void motion_setSensor(hcSr501_p inst){
+	motion_hcSr501Inst = NULL;
+}
+
 void task_MOTION(void* pvParameters) {
 
-	hcSr501Inst = hcSr501Create(&PORTE, PE5);
 
 	for (;;) {
 		
-		vTaskDelay(pdMS_TO_TICKS(60000));
+		vTaskDelay(pdMS_TO_TICKS(61000));
 		motion_meassure(pvParameters);
 	}
 }
