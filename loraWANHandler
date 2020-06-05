@@ -12,6 +12,8 @@
 #include <lora_driver.h>
 #include <iled.h>
 
+#include "loraWanDriver.h"
+
 #include "Room.h"
 
 // Parameters for OTAA join - You have got these in a mail from IHA
@@ -23,7 +25,7 @@ static char _out_buf[100];
 void lora_handler_task( void *pvParameters );
 void Downlink_Task( void *pvParameters );
 
-static lora_payload_t _uplink_payload;
+lora_payload_t _uplink_payload;
 
  MessageBufferHandle_t down_link_message_buffer_handle;
 
@@ -138,36 +140,19 @@ void lora_handler_task( void *pvParameters )
 	lora_driver_flush_buffers(); // get rid of first version string from module after reset!
 
 	_lora_setup();
-
-	_uplink_payload.len = 6;
-	_uplink_payload.port_no = 2;
-
-	TickType_t xLastWakeTime;
-	const TickType_t xFrequency = pdMS_TO_TICKS(30000UL); // Upload message every 5 minutes (300000 ms)
-	xLastWakeTime = xTaskGetTickCount();
 	
-	lora_payload_t downlink_payload;
 	
 	for(;;)
 	{
-		vTaskDelayUntil( &xLastWakeTime, xFrequency );
+		BaseType_t em = xQueueReceive(loraWan_Queue, &_uplink_payload, 0);
+		
+		if(em == pdTRUE){
+			printf("payload length: %d \n", _uplink_payload.len);
+			led_short_puls(led_ST4);  // OPTIONAL
+			printf("Upload Message >%s<\n", lora_driver_map_return_code_to_text(lora_driver_sent_upload_message(false, &_uplink_payload)));
+			
+		}
 
-//
-		// Some dummy payload
-		uint16_t hum = getHumidity(humidity_sensor);
-		int16_t temp = 675; // Dummy temp
-		uint16_t co2_ppm = getCO2(co2_sensor);
-		// activity true = all ones
-
-		_uplink_payload.bytes[0] = hum >> 8;
-		_uplink_payload.bytes[1] = hum & 0xFF;
-		_uplink_payload.bytes[2] = temp >> 8;
-		_uplink_payload.bytes[3] = temp & 0xFF;
-		_uplink_payload.bytes[4] = co2_ppm >> 8;
-		_uplink_payload.bytes[5] = co2_ppm & 0xFF;
-
-		led_short_puls(led_ST4);  // OPTIONAL
-		printf("Upload Message >%s<\n", lora_driver_map_return_code_to_text(lora_driver_sent_upload_message(false, &_uplink_payload)));
 		
 	
 	}
@@ -183,39 +168,17 @@ void Downlink_Task( void *pvParameters )
 	const TickType_t xFrequency = pdMS_TO_TICKS(1000UL); // Upload message every 5 minutes (300000 ms)
 	xLastWakeTime = xTaskGetTickCount();
 	
-	uint16_t max_hum_setting; // Max Humidity
-	int16_t max_temp_setting; // Max Temperature
-	int16_t third_byte;
-	
-	
 	lora_payload_t downlink_payload;
 	for(;;)
 	{
-			//vTaskDelayUntil( &xLastWakeTime, xFrequency );
-			
-	
 		
 		printf("Down link ready \n")
 		xMessageBufferReceive(down_link_message_buffer_handle, &downlink_payload, sizeof(lora_payload_t), portMAX_DELAY);
 		
 		printf("DOWN LINK: from port: %d with %d bytes received! \n", downlink_payload.port_no, downlink_payload.len); // Just for Debug
 
-		if (4 == downlink_payload.len) // Check that we have got the expected 4 bytes
-		{
-			// decode the payload into our variables
-			max_hum_setting = (downlink_payload.bytes[0] << 8) + downlink_payload.bytes[1];
-			max_temp_setting = (downlink_payload.bytes[2] << 8) + downlink_payload.bytes[3];
-		}
+		room_decode(downlink_payload);
 		
-		if (6 == downlink_payload.len) // Check that we have got the expected 4 bytes
-		{
-			// decode the payload into our variables
-			max_hum_setting = (downlink_payload.bytes[0] << 8) + downlink_payload.bytes[1];
-			max_temp_setting = (downlink_payload.bytes[2] << 8) + downlink_payload.bytes[3];
-			third_byte = (downlink_payload.bytes[4] << 8) + downlink_payload.bytes[5];
-		}
-		
-		printf("Byte 0: %d \n Byte 1: %d \n", downlink_payload.bytes[0], downlink_payload.bytes[1]);
 
 lora_driver_flush_buffers();
 	}
