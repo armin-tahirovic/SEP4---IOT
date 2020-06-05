@@ -1,0 +1,43 @@
+#include "window.h"
+
+typedef struct WINDOW {
+	
+	bool isOpen;
+}WINDOW_t;
+
+pWINDOW window_create() {
+	pWINDOW driverPort = (pWINDOW)pvPortMalloc(sizeof(WINDOW_t));
+	rcServoCreate();
+
+	if (NULL == driverPort)
+	return NULL;
+
+	return driverPort;
+
+}
+
+void window_destroy(pWINDOW self) {
+	vPortFree(self);
+}
+
+
+
+void window_open(pWINDOW self) {
+rcServoSet(0, 50);
+self->isOpen = true;
+	
+}
+
+void window_close(pWINDOW self) {
+	rcServoSet(0, 0);
+	self->isOpen = false;
+}
+
+bool window_getIsOpen(pWINDOW self) {
+
+	return self->isOpen;
+}
+
+void window_setIsOpen(pWINDOW self, bool isOpen){
+	self->isOpen = isOpen;
+}
