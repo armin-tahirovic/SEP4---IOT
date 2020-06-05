@@ -9,6 +9,8 @@ pCO2 co2_create() {
 
 	if (NULL == driverPort)
 	return NULL;
+	
+	driverPort->co2 = 0;
 
 	return driverPort;
 
@@ -18,36 +20,28 @@ void co2_destroy(pCO2 self) {
 	vPortFree(self);
 }
 
-mh_z19_return_code_t rc;
 
 void co2_meassure(pCO2 self) {
-	
-	rc = mh_z19_take_meassuring();
-	if (rc != MHZ19_OK)
-	{
-		printf("something wrong: \n");
-	}
-			printf("new co2: \n");
-	
-	
+	xSemaphoreTake(xSemaphore_co2, portMAX_DELAY);
+	mh_z19_take_meassuring();
+	xSemaphoreGive(xSemaphore_co2);
 }
 
 uint16_t getCO2(pCO2 self) {
 	return self->co2;
 }
 
-void setCO2(pCO2 self, uint16_t ppm) {
-	
-	self->co2 = ppm;
-
+void setCO2(pCO2 self, uint16_t co2ppm) {
+	self->co2 = co2ppm;
 }
 
 
 void task_CO2(void* pvParameters) {
-	(void)pvParameters;
+	printf("CO2 task started \n");
 	for (;;) {
 	
-		vTaskDelay(pdMS_TO_TICKS(5000));
+		vTaskDelay(pdMS_TO_TICKS(4500));
+		
 		co2_meassure(pvParameters);
 			
 	}
