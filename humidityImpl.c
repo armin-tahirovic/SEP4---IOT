@@ -23,9 +23,14 @@ void humidity_destroy(pHumidity self){
 }
 
 void humidity_meassure(pHumidity self) {
+	
 	hih8120Meassure();
+	
+	xSemaphoreTake(xSemaphore_hum, portMAX_DELAY);
 	setHumidity(self, hih8120GetHumidityPercent_x10());
 	setTemperature(self, hih8120GetTemperature_x10());
+	xSemaphoreGive(xSemaphore_hum);
+	
 	printf("Humidity and temperature: %d and %d \n", self->humidity, self->temperature);
 }
 
@@ -56,9 +61,8 @@ void task_Humidity(void* pvParameters) {
 	printf("Humidity task started \n");
 	for (;;) {
 		
-		vTaskDelay(pdMS_TO_TICKS(59000));
+		vTaskDelay(pdMS_TO_TICKS(4000));
 		humidity_meassure(pvParameters);
-		
 
 	}
 }
