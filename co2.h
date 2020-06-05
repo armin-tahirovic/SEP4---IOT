@@ -1,9 +1,12 @@
 #pragma once
 
 #include <ATMEGA_FreeRTOS.h>
-#include <mh_z19.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <task.h>
+#include <mh_z19.h>
+
+#include "semaphores.h"
 
 uint16_t new_co2_meassure;
 
@@ -17,9 +20,3 @@ uint16_t getCO2(pCO2 self);
 void setCO2(pCO2 self, uint16_t ppm);
 
 void task_CO2(void* pvParameters);
-
-
-
-
-EventGroupHandle_t xEventGroup;
-SemaphoreHandle_t xSemaphore;
