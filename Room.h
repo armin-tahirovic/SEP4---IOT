@@ -2,14 +2,14 @@
 
 #include <ATMEGA_FreeRTOS.h>
 
-#include <queue.h>
-
 #include <lora_driver.h>
 
 #include <hih8120.h>
 #include <tsl2591.h>
 #include <hcSr501.h>
 #include <mh_z19.h>
+
+#include "semaphores.h"
 
 #include "co2.h"
 #include "humidity.h"
@@ -18,11 +18,9 @@
 #include "loraWanDriver.h"
 
 #include "event_groups.h"
+#include "custom_queues.h"
 
 static lora_payload_t uplink_message;
-
-QueueHandle_t loraWan_Queue;
-
 
 #define BIT_0 ( 1 << 0)
 #define BIT_1 ( 1 << 1)
@@ -41,4 +39,3 @@ void room_decode(lora_payload_t downlink_message);
 void room_setThresholdHumidityMax(uint16_t newValue);
 
 void task_RoomCollect(void* pvParameters);
-
