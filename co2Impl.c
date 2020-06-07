@@ -39,7 +39,7 @@ void setCO2(pCO2 self, uint16_t co2ppm) {
 void task_CO2(void* pvParameters) {
 	printf("CO2 task started \n");
 	for (;;) {
-	
+		xEventGroupSetBits(xEventGroup, BIT_0);
 		vTaskDelay(pdMS_TO_TICKS(4500));
 		
 		co2_meassure(pvParameters);
