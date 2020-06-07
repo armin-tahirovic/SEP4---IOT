@@ -60,7 +60,7 @@ void task_Humidity(void* pvParameters) {
 	
 	printf("Humidity task started \n");
 	for (;;) {
-		
+		xEventGroupSetBits(xEventGroup, BIT_1);
 		vTaskDelay(pdMS_TO_TICKS(4000));
 		humidity_meassure(pvParameters);
 
