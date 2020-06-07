@@ -17,15 +17,11 @@
 #include "window.h"
 #include "loraWanDriver.h"
 
-#include "event_groups.h"
+#include "eventGroups.h"
 #include "custom_queues.h"
 
 static lora_payload_t uplink_message;
 
-#define BIT_0 ( 1 << 0)
-#define BIT_1 ( 1 << 1)
-#define BIT_2 (1 << 2)
-#define BIT_3 (1 << 3)
 
 
 void* room_co2_sensor;
