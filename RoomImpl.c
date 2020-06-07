@@ -95,9 +95,9 @@ void task_RoomCollect(void* pvParameters) {
    
 
 		for (;;) {
-			EventBits_t uxBits = xEventGroupWaitBits(xEventGroup, BIT_0 | BIT_1 | BIT_2 , pdTRUE, pdTRUE, 500);
+			EventBits_t uxBits = xEventGroupWaitBits(xEventGroup, BIT_0 | BIT_1, pdTRUE, pdTRUE, 500);
 
-		if ((uxBits & (BIT_0 | BIT_1 | BIT_2 )) == (BIT_0 | BIT_1 | BIT_2 )){
+		if ((uxBits & (BIT_0 | BIT_1 )) == (BIT_0 | BIT_1 )){
 				vTaskDelay(pdMS_TO_TICKS(5000));
 			
 				xSemaphoreTake(xSemaphore_co2, portMAX_DELAY);
@@ -123,7 +123,7 @@ void task_RoomCollect(void* pvParameters) {
 				  uplink_message.bytes[6] = room_motion_meassure;
 				 
 				xQueueSend(loraWan_Queue, (void*)&uplink_message, portMAX_DELAY);
-				xEventGroupClearBits(xEventGroup, BIT_0 | BIT_1 | BIT_2);
+				xEventGroupClearBits(xEventGroup, BIT_0 | BIT_1);
 				
 			printf("CO2: %d \n Humidity: %d \n Temperature %d \n activity: %d \n", room_co2_meassure, room_humidity_meassure, room_temperature_meassure, room_motion_meassure);
 		
