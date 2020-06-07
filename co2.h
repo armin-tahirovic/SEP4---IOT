@@ -7,7 +7,7 @@
 #include <mh_z19.h>
 
 #include "semaphores.h"
-
+#include "eventGroups.h"
 uint16_t new_co2_meassure;
 
 
