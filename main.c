@@ -101,6 +101,8 @@ void create_tasks_and_semaphores(void)
 	  room_motion_sensor,
 	  TASK_MY_SECOND_PRIORITY,
 	  NULL);
+	
+
 	  
 	  	if ( xSemaphore_hum == NULL )  // Check to confirm that the Semaphore has not already been created.
 	  	{
