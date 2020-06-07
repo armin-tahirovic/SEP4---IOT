@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <task.h>
-
+#include "eventGroups.h"
 #include "semaphores.h"
 
 typedef struct humidity* pHumidity;
