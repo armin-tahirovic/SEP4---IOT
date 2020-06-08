@@ -5,12 +5,12 @@ int16_t room_temperature_meassure;
 uint16_t room_humidity_meassure;
 uint8_t room_motion_meassure;
 
-uint8_t maxThreshold_co2;
-uint8_t minThreshold_co2;
+uint16_t maxThreshold_co2;
+uint16_t minThreshold_co2;
 uint16_t maxThreshold_hum;
 uint8_t minThreshold_hum;
-uint8_t maxThreshold_temp;
-uint8_t minThreshold_temp;
+int16_t maxThreshold_temp;
+int16_t minThreshold_temp;
 
 void room_destroy() {
 	co2_destroy(room_co2_sensor);
